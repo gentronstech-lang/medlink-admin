@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
+    { "source": "/account-deletion", "destination": "/account-deletion.html" },
+    { "source": "/((?!privacy-policy\\.html|account-deletion\\.html|privacy-policy|account-deletion|assets/|medlink-logo\\.png|vite\\.svg).*)", "destination": "/index.html" }
+  ]
+}

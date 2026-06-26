@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light theme — MedLink Africa brand (teal + gold) */
+  :root {
+    --background: 180 10% 97%;
+    --foreground: 180 100% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 180 100% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 180 100% 15%;
+    --primary: 173 100% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 42% 95%;
+    --secondary-foreground: 173 100% 24%;
+    --muted: 180 8% 93%;
+    --muted-foreground: 174 63% 40%;
+    --accent: 38 48% 94%;
+    --accent-foreground: 173 100% 24%;
+    --destructive: 0 63% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 180 12% 88%;
+    --input: 180 10% 90%;
+    --ring: 173 100% 24%;
+    --brand-gold: 36 66% 54%;
+    --radius: 0.875rem;
+  }
+
+  /* Dark theme */
+  .dark {
+    --background: 180 22% 6%;
+    --foreground: 174 63% 84%;
+    --card: 180 20% 8%;
+    --card-foreground: 174 63% 84%;
+    --popover: 180 20% 8%;
+    --popover-foreground: 174 63% 84%;
+    --primary: 173 100% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 22% 16%;
+    --secondary-foreground: 174 63% 84%;
+    --muted: 180 16% 14%;
+    --muted-foreground: 174 45% 70%;
+    --accent: 38 28% 18%;
+    --accent-foreground: 174 63% 84%;
+    --destructive: 0 63% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 180 14% 16%;
+    --input: 180 14% 14%;
+    --ring: 174 63% 40%;
+    --brand-gold: 36 66% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'DM Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Sub-headings in dark blue across app sections */
+  h2, h3, h4, h5, h6 {
+    color: #004d4d;
+  }
+
+  /* Content paragraphs in green tone across the app */
+  p {
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Modern scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full transition-colors;
+}
+
+:root ::-webkit-scrollbar-thumb {
+  @apply bg-black/15 hover:bg-black/25;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-white/15 hover:bg-white/25;
+}
+
+/* Background helpers */
+.bg-mesh {
+  background:
+    radial-gradient(ellipse 90% 70% at 15% -10%, hsl(180 45% 42% / 0.08), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, hsl(38 58% 48% / 0.07), transparent 45%),
+    hsl(var(--background));
+}
+
+.dark .bg-mesh {
+  background:
+    radial-gradient(ellipse 100% 80% at 50% -30%, hsl(180 45% 42% / 0.14), transparent 50%),
+    radial-gradient(ellipse 80% 50% at 100% 0%, hsl(38 55% 52% / 0.1), transparent 40%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, hsl(180 50% 35% / 0.08), transparent 40%),
+    linear-gradient(180deg, hsl(180 22% 5%) 0%, hsl(180 20% 7%) 50%, hsl(180 22% 6%) 100%);
+}
+
+/* Subtle grid overlay */
+.bg-dots {
+  /* No grid in light mode for a clean white background */
+  background-image: none;
+}
+
+.dark .bg-dots {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Glass card */
+.glass-dark {
+  @apply bg-black/[0.03] backdrop-blur-2xl border border-black/[0.06];
+}
+
+.dark .glass-dark {
+  @apply bg-white/[0.04] border-white/[0.08];
+}
+
+/* Glow effects */
+.glow-teal {
+  box-shadow: 0 0 60px -15px hsl(180 58% 28% / 0.35);
+}
+
+.dark .glow-teal {
+  box-shadow: 0 0 60px -15px hsl(180 45% 42% / 0.3);
+}
+
+/* Page header gradient line */
+.page-header-accent {
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--brand-gold) / 0.85));
+  height: 3px;
+  border-radius: 2px;
+  width: 48px;
+  margin-top: 8px;
+}
+
+/* Theme-aware surface (subtle bg for tables, cards) */
+.bg-surface {
+  background: rgba(0, 0, 0, 0.04);
+}
+.dark .bg-surface {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.bg-surface-hover:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.dark .bg-surface-hover:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.border-surface {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.dark .border-surface {
+  border-color: rgba(255, 255, 255, 0.08);
+}

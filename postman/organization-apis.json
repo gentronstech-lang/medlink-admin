@@ -1,0 +1,131 @@
+{
+  "name": "MedLink - Organization APIs",
+  "base": "{{baseUrl}}",
+  "auth": {
+    "globalAdmin": "Bearer <ADMIN_JWT>",
+    "orgAdmin": "Bearer <ORG_ADMIN_JWT>"
+  },
+  "apis": [
+    {
+      "group": "Global Admin (creates org + org admins)",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/organization/admin/organizations",
+          "auth": "globalAdmin",
+          "body": { "name": "Acme Ambulance Services", "code": "ACME" },
+          "response": { "success": true, "organization": { "id": 1, "name": "Acme Ambulance Services", "code": "ACME" } }
+        },
+        {
+          "method": "POST",
+          "path": "/organization/admin/organization-admins",
+          "auth": "globalAdmin",
+          "body": {
+            "organizationId": 1,
+            "fullName": "Acme Admin",
+            "email": "admin@acme.com",
+            "password": "TempPass123"
+          },
+          "response": {
+            "success": true,
+            "admin": { "id": 10, "organizationId": 1, "fullName": "Acme Admin", "email": "admin@acme.com", "isActive": true }
+          }
+        }
+      ]
+    },
+    {
+      "group": "Organization Admin Auth",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/organization/auth/login",
+          "auth": "none",
+          "body": { "email": "admin@acme.com", "password": "TempPass123" },
+          "response": {
+            "success": true,
+            "admin": { "id": 10, "fullName": "Acme Admin", "email": "admin@acme.com", "organization": { "id": 1, "name": "Acme Ambulance Services" } },
+            "access_token": "<ORG_ADMIN_JWT>"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Organization Admin Panel (manages admins + drivers)",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/organization/admins",
+          "auth": "orgAdmin",
+          "body": null,
+          "response": {
+            "success": true,
+            "data": [
+              {
+                "id": 10,
+                "fullName": "Acme Admin",
+                "email": "admin@acme.com",
+                "isActive": true,
+                "lastLoginAt": "2026-03-18T00:00:00.000Z"
+              }
+            ]
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/organization/admins",
+          "auth": "orgAdmin",
+          "body": { "fullName": "Second Admin", "email": "admin2@acme.com" },
+          "response": {
+            "success": true,
+            "admin": { "id": 11, "fullName": "Second Admin", "email": "admin2@acme.com", "isActive": true },
+            "credentials": { "email": "admin2@acme.com", "password": "<generated>" }
+          }
+        },
+        {
+          "method": "PATCH",
+          "path": "/organization/admins/:id/password",
+          "auth": "orgAdmin",
+          "body": { "newPassword": "NewPass123" },
+          "response": { "success": true, "message": "Password updated" }
+        },
+        {
+          "method": "POST",
+          "path": "/organization/drivers",
+          "auth": "orgAdmin",
+          "body": {
+            "fullName": "Driver One",
+            "phone": "+923001234567",
+            "email": "driver@acme.com",
+            "vehicleType": "Ambulance",
+            "vehiclePlate": "ABC-123",
+            "licenseNo": "LIC-12345"
+          },
+          "response": {
+            "success": true,
+            "driver": { "id": 200, "fullName": "Driver One", "email": "driver@acme.com", "phone": "+923001234567", "isActive": true },
+            "credentials": { "email": "driver@acme.com", "phone": "+923001234567", "password": "<generated>" }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/organization/drivers",
+          "auth": "orgAdmin",
+          "body": null,
+          "response": { "success": true, "data": [] }
+        },
+        {
+          "method": "PATCH",
+          "path": "/organization/drivers/:id/password",
+          "auth": "orgAdmin",
+          "body": { "newPassword": "DriverNewPass123" },
+          "response": {
+            "success": true,
+            "message": "Driver password updated",
+            "credentials": { "email": "driver@acme.com", "phone": "+923001234567", "password": "DriverNewPass123" }
+          }
+        }
+      ]
+    }
+  ]
+}
+

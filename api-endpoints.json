@@ -1,0 +1,97 @@
+{
+  "baseURL": "http://localhost:3000",
+  "auth": "Bearer token (set access_token in localStorage)",
+  "endpoints": [
+    {
+      "module": "Dashboard",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/stats", "body": null },
+        { "method": "GET", "endpoint": "/admin/dashboard", "body": null },
+        { "method": "GET", "endpoint": "/admin/earnings-reports", "body": null }
+      ]
+    },
+    {
+      "module": "Users",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/users?page=1&limit=20", "body": null },
+        { "method": "GET", "endpoint": "/admin/users/:id", "body": null },
+        { "method": "PATCH", "endpoint": "/admin/users/:id", "body": { "isActive": "boolean", "isVerified": "boolean", "fullName": "string", "email": "string", "phone": "string" } }
+      ]
+    },
+    {
+      "module": "Doctors",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/doctors?page=1&limit=20", "body": null },
+        { "method": "GET", "endpoint": "/admin/doctors/:id", "body": null },
+        { "method": "PATCH", "endpoint": "/admin/doctors/:id", "body": { "isApproved": "boolean", "isAvailable": "boolean" } }
+      ]
+    },
+    {
+      "module": "Patients",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/patients?page=1&limit=20", "body": null },
+        { "method": "GET", "endpoint": "/admin/patients/:id", "body": null }
+      ]
+    },
+    {
+      "module": "Appointments",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/appointments?page=1&limit=20", "body": null },
+        { "method": "GET", "endpoint": "/admin/appointments/:id", "body": null },
+        { "method": "PATCH", "endpoint": "/admin/appointments/:id/status", "body": { "status": "CONFIRMED|CANCELLED", "cancelReason": "string" } }
+      ]
+    },
+    {
+      "module": "Specialties",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/specialties", "body": null },
+        { "method": "POST", "endpoint": "/admin/specialties", "body": { "name": "string" } },
+        { "method": "PATCH", "endpoint": "/admin/specialties/:id", "body": { "name": "string" } },
+        { "method": "DELETE", "endpoint": "/admin/specialties/:id", "body": null }
+      ]
+    },
+    {
+      "module": "Health Articles",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/health-articles?page=1&limit=20", "body": null },
+        { "method": "POST", "endpoint": "/admin/health-articles", "body": { "title": "string", "category": "string", "coverImageUrl": "string", "contentHtml": "string", "isPublished": "boolean" } },
+        { "method": "GET", "endpoint": "/admin/health-articles/:id", "body": null },
+        { "method": "PATCH", "endpoint": "/admin/health-articles/:id", "body": { "title": "string", "category": "string", "isPublished": "boolean" } },
+        { "method": "DELETE", "endpoint": "/admin/health-articles/:id", "body": null }
+      ]
+    },
+    {
+      "module": "Payments",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/payments?page=1&limit=20", "body": null }
+      ]
+    },
+    {
+      "module": "Payouts",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/payouts?page=1&limit=20", "body": null },
+        { "method": "PATCH", "endpoint": "/admin/payouts/:id/status", "body": { "status": "PROCESSING", "provider": "string", "providerRef": "string" } }
+      ]
+    },
+    {
+      "module": "SOS Events",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/sos-events?page=1&limit=20", "body": null },
+        { "method": "GET", "endpoint": "/admin/sos-events/:id", "body": null },
+        { "method": "PATCH", "endpoint": "/admin/sos-events/:id/status", "body": { "status": "ASSIGNED", "assignedDriverId": "number" } }
+      ]
+    },
+    {
+      "module": "Notifications",
+      "apis": [
+        { "method": "POST", "endpoint": "/admin/notifications/send", "body": { "userId": "number", "title": "string", "body": "string", "type": "INFO", "data": {} } }
+      ]
+    },
+    {
+      "module": "Prescriptions",
+      "apis": [
+        { "method": "GET", "endpoint": "/admin/prescriptions?page=1&limit=20", "body": null }
+      ]
+    }
+  ]
+}
