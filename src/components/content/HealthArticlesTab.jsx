@@ -349,8 +349,7 @@ export default function HealthArticlesTab() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-foreground">Health Articles</h2>
+            <div className="flex justify-end items-center">
                 <Button onClick={handleAddClick} className="gap-2">
                     <Plus size={20} /> Add Article
                 </Button>

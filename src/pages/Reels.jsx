@@ -38,6 +38,15 @@ import { cn } from '@/lib/utils';
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
+/** Must match medlink-be REEL_MAX_FILE_SIZE_MB (default 200). */
+const REEL_MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+
+function formatFileSize(bytes) {
+    if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${bytes} B`;
+}
 
 /** YouTube watch / shorts / youtu.be — video id for embed preview */
 function getYoutubeVideoId(raw) {
@@ -243,21 +252,58 @@ export default function Reels() {
 
     const uploadReelVideo = async (file) => {
         if (!file) return;
+
+        const allowedExt = /\.(mp4|mov|webm|m4v)$/i;
+        if (!allowedExt.test(file.name || '')) {
+            toast.error('Only mp4, mov, webm, or m4v videos are supported.');
+            return;
+        }
+        if (file.size > REEL_MAX_VIDEO_BYTES) {
+            toast.error(
+                `Video is ${formatFileSize(file.size)}. Maximum allowed is ${formatFileSize(REEL_MAX_VIDEO_BYTES)}.`
+            );
+            return;
+        }
+
         try {
             setUploadingVideo(true);
-            const fd = new FormData();
-            fd.append('file', file);
-            const res = await api.post('/common/reels/upload', fd);
-            const payload = getPayload(res) ?? res.data ?? {};
-            const url = payload.url ?? payload.data?.url;
-            if (!url) {
-                toast.error('Upload succeeded but video URL missing in response.');
+
+            // Small JSON request only — video goes direct to S3 (bypasses nginx ~1MB API limit).
+            const presignRes = await api.post('/common/reels/upload-url', {
+                fileName: file.name,
+                contentType: file.type || 'video/mp4',
+                fileSize: file.size,
+            });
+            const presign = getPayload(presignRes) ?? presignRes.data ?? {};
+            const uploadUrl = presign.uploadUrl;
+            const publicUrl = presign.url;
+            if (!uploadUrl || !publicUrl) {
+                toast.error('Upload could not start (missing presigned URL).');
                 return;
             }
-            setForm((f) => ({ ...f, videoUrl: String(url) }));
+
+            const putRes = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: file,
+                headers: {
+                    'Content-Type': file.type || 'video/mp4',
+                },
+            });
+            if (!putRes.ok) {
+                throw new Error(`S3 upload failed (${putRes.status})`);
+            }
+
+            setForm((f) => ({ ...f, videoUrl: String(publicUrl) }));
             toast.success('Video uploaded');
         } catch (err) {
-            toast.error(getAdminErrorMessage(err));
+            const msg = getAdminErrorMessage(err);
+            if (msg === 'Network Error' || err?.message === 'Failed to fetch') {
+                toast.error(
+                    'Upload blocked by server or S3 CORS. Deploy latest backend and set S3 bucket CORS for admin domain, or raise nginx client_max_body_size on API server.'
+                );
+            } else {
+                toast.error(msg);
+            }
         } finally {
             setUploadingVideo(false);
         }
@@ -585,9 +631,10 @@ export default function Reels() {
                                     }}
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Choose a file from your device. It uploads to{' '}
-                                    <code className="text-[11px]">/common/reels/upload</code> and fills the video
-                                    link field — you can still paste a link instead if you prefer.
+                                    MP4, MOV, WEBM, or M4V up to{' '}
+                                    {formatFileSize(REEL_MAX_VIDEO_BYTES)}. Uploads to{' '}
+                                    <code className="text-[11px]">/common/reels/upload</code> — or paste a
+                                    video link instead.
                                 </p>
                                 {uploadingVideo && (
                                     <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
